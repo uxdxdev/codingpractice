@@ -19,26 +19,26 @@ function Home() {
   const problemUrl = data && data[currentProblem]["Link"];
 
   return (
-    <>
-      <a target="_blank" href={problemUrl}>
+    <div className="h-full flex flex-col items-center justify-center space-y-4">
+      <a className="text-2xl" target="_blank" href={problemUrl}>
         {problemName}
       </a>
 
-      <div className="flex-auto flex space-x-3">
+      <div className="space-x-3">
         <button
           onClick={() => setCurrentProblem(getRandomElement(data))}
-          className="px-3 py-1 font-semibold rounded-md bg-black text-white"
+          className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
         >
           Easy
         </button>
         <button
           onClick={() => setCurrentProblem(getRandomElement(data))}
-          className="px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
+          className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
         >
           Hard
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
