@@ -21,7 +21,7 @@ export function fetchData(url: string) {
     .then((json) => responseValues(json));
 }
 
-export function getRandomElement(data: Record<string, string>[]) {
+export function getRandomElement<T>(data: T[]): number {
   const max = data.length - 1;
   return Math.floor(Math.random() * max);
 }

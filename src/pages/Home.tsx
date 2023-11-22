@@ -1,22 +1,39 @@
-import { useEffect, useState } from "react";
-import { fetchData, getRandomElement } from "../utils";
-import { SHEET_DATABASE_API_URL } from "../constants";
+import { useState } from "react";
+import { getRandomElement } from "../utils";
+import { HomeProps } from "../types";
+import { updateProblemBox } from "../services/storage.services";
 
-function Home() {
-  const [data, setData] = useState<Record<string, string>[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentProblem, setCurrentProblem] = useState(0);
+const dayBoxMapping: { [key: string]: string } = {
+  "1": "1",
+  "3": "2",
+  "7": "3",
+  "14": "4",
+  "28": "5",
+};
 
-  useEffect(() => {
-    fetchData(SHEET_DATABASE_API_URL)
-      .then((formattedData) => setData(formattedData))
-      .then(() => setIsLoading(false));
-  }, []);
+const DIFFICULTY_LEVELS = {
+  EASY: "EASY",
+  HARD: "HARD",
+};
 
-  if (isLoading) return;
+function handleDifficultySelection(selection: string, currentProblem: string, currentBoxNumber: string) {
+  if (selection === DIFFICULTY_LEVELS.EASY) {
+    const boxNumber = Number(currentBoxNumber) + 1;
+    const nextBoxNumber = "" + (boxNumber <= 5 ? boxNumber : 5);
+    updateProblemBox(currentProblem, nextBoxNumber);
+  } else if (selection === DIFFICULTY_LEVELS.HARD) {
+    updateProblemBox(currentProblem, "1");
+  }
+}
 
-  const problemName = data && data[currentProblem]["Problem"];
-  const problemUrl = data && data[currentProblem]["Link"];
+function Home({ data: { currentDay, problems } }: HomeProps) {
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
+  const currentBoxNumber = dayBoxMapping[currentDay];
+  const currentProblemSet = problems.filter((item) => item.box === currentBoxNumber);
+  console.log(currentProblemSet);
+
+  const problemName = currentProblemSet[currentProblemIndex]?.name;
+  const problemUrl = currentProblemSet[currentProblemIndex]?.link;
 
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">
@@ -26,13 +43,19 @@ function Home() {
 
       <div className="space-x-3">
         <button
-          onClick={() => setCurrentProblem(getRandomElement(data))}
+          onClick={() => {
+            handleDifficultySelection(DIFFICULTY_LEVELS.EASY, problemName, currentBoxNumber);
+            setCurrentProblemIndex(getRandomElement(currentProblemSet));
+          }}
           className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
         >
           Easy
         </button>
         <button
-          onClick={() => setCurrentProblem(getRandomElement(data))}
+          onClick={() => {
+            handleDifficultySelection(DIFFICULTY_LEVELS.HARD, problemName, currentBoxNumber);
+            setCurrentProblemIndex(getRandomElement(currentProblemSet));
+          }}
           className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
         >
           Hard
