@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchData, getRandomElement } from "../utils";
+import { fetchData, getRandomElement } from "../lib/utils";
 import { SHEET_DATABASE_API_URL } from "../constants";
 
 function Home() {
