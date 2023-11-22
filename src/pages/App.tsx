@@ -1,27 +1,51 @@
 import { useEffect, useState } from "react";
 import Home from "./Home";
 import { LocalStorage } from "../services/storage.services";
-import { fetchData } from "../utils";
+import { fetchData } from "../lib/utils";
 import { SHEET_DATABASE_API_URL } from "../constants";
-import { Problems, SheetData, StoredData } from "../types";
+import { Boxes, Problem, SheetData, StoredData } from "../types";
+
+const daysAgo = new Date();
+daysAgo.setDate(daysAgo.getDate() - 3);
 
 const defaultStoredData: StoredData = {
-  previousSessionDate: new Date(),
+  previousSessionDate: daysAgo,
   currentDay: "1",
-  totalProblems: 0,
-  "1": [],
-  "2": [],
-  "3": [],
-  "4": [],
-  "5": [],
+  boxes: {
+    "1": [],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+  },
+};
+
+const dayBoxMapping: { [key: string]: string } = {
+  "1": "1",
+  "3": "2",
+  "7": "3",
+  "14": "4",
+  "28": "5",
 };
 
 function App() {
-  const [isFetchingProblemLinks, setIsFetchingProblemLinks] = useState(true);
-  const [sheetData, setSheetData] = useState<SheetData>([]);
+  const [isFetchingSheetData, setIsFetchingSheetData] = useState(true);
   const [isFetchingStoredData, setIsFetchingStoredData] = useState(true);
-  const [savedData, setSavedData] = useState<StoredData>(defaultStoredData);
-  const [isMergingData, setIsMergingData] = useState(true);
+  const [sheetData, setSheetData] = useState<SheetData>([]);
+  const [storedData, setStoredData] = useState<StoredData | null>(null);
+  const [currentBoxNumber, setCurrentBoxNumber] = useState("1");
+  const [currentDay, setCurrentDay] = useState("1");
+  const [currentProblemSet, setCurrentProblemSet] = useState<Problem[]>([]);
+
+  useEffect(() => {
+    if (storedData) {
+      const boxNumber = dayBoxMapping[storedData.currentDay];
+      setCurrentBoxNumber(boxNumber);
+      const problemSet = (storedData.boxes as Boxes)[boxNumber as keyof Boxes];
+      setCurrentProblemSet(problemSet);
+      setCurrentDay(storedData.currentDay);
+    }
+  }, [isFetchingStoredData, storedData]);
 
   useEffect(() => {
     fetchData(SHEET_DATABASE_API_URL)
@@ -34,68 +58,47 @@ function App() {
         });
         setSheetData(formattedData);
       })
-      .then(() => setIsFetchingProblemLinks(false));
+      .then(() => setIsFetchingSheetData(false));
   }, []);
 
   useEffect(() => {
-    const rawStoredData = LocalStorage.getItem("data");
-    try {
+    if (!isFetchingSheetData && sheetData.length !== 0) {
+      const rawStoredData = LocalStorage.getItem("data");
       if (rawStoredData) {
         const parsedSavedData: StoredData = JSON.parse(rawStoredData);
         const updatedSavedData = {
           ...parsedSavedData,
-          previousSessionDate: new Date(parsedSavedData.previousSessionDate),
+          previousSessionDate: new Date(),
         };
-        setSavedData(updatedSavedData);
+        setStoredData(updatedSavedData);
+        LocalStorage.setItem("data", JSON.stringify(updatedSavedData));
       } else {
+        sheetData.forEach((item) => defaultStoredData.boxes["1"].push({ name: item.problem, link: item.link }));
+        setStoredData(defaultStoredData);
         LocalStorage.setItem("data", JSON.stringify(defaultStoredData));
       }
-    } catch (e) {
-      console.error(e);
+
+      setIsFetchingStoredData(false);
     }
-    setIsFetchingStoredData(false);
-  }, []);
+  }, [sheetData, isFetchingSheetData]);
 
   useEffect(() => {
-    if (!isFetchingStoredData && !isFetchingProblemLinks && sheetData.length !== savedData.totalProblems) {
-      setIsMergingData(true);
-
-      const updatedProblemSet: Problems = sheetData.map((item) => {
-        return {
-          name: item.problem,
-          link: item.link,
-          box: savedData.problems.find((value) => value.name === item.problem)?.box || "1",
-        };
-      });
-      const storedData = LocalStorage.getItem("data");
-      const updatedStoredData = storedData && JSON.parse(storedData);
-      updatedStoredData.problems = updatedProblemSet;
-      LocalStorage.setItem("data", JSON.stringify(updatedStoredData));
-
-      setSavedData((current) => {
-        return {
-          ...current,
-          problems: updatedProblemSet,
-        };
-      });
+    if (storedData) {
+      const today = new Date();
+      if (
+        storedData.previousSessionDate.getDate() !== today.getDate() ||
+        storedData.previousSessionDate.getMonth() !== today.getMonth()
+      ) {
+        const diffDays = today.getDate() - storedData.previousSessionDate.getDate();
+        // set currentDay
+        console.log(diffDays);
+      }
     }
-    setIsMergingData(false);
-  }, [sheetData, savedData, isFetchingProblemLinks, isFetchingStoredData]);
+  }, [storedData]);
 
-  useEffect(() => {
-    const today = new Date();
-    if (
-      savedData.previousSessionDate.getDay() !== today.getDay() &&
-      savedData.previousSessionDate.getMonth() !== today.getMonth()
-    ) {
-      const diffDays = today.getDay() - savedData.previousSessionDate.getDay();
-      console.log(diffDays);
-    }
-  }, [savedData]);
+  if (isFetchingSheetData || isFetchingStoredData) return;
 
-  if (isFetchingProblemLinks || isFetchingStoredData || isMergingData) return;
-
-  return <Home data={savedData} />;
+  return <Home currentBoxNumber={currentBoxNumber} currentDay={currentDay} currentProblemSet={currentProblemSet} />;
 }
 
 export default App;
