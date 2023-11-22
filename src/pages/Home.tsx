@@ -58,7 +58,11 @@ function Home({ currentBoxNumber, currentDay, currentProblemSet }: HomeProps) {
         <div>All problems solved!</div>
       ) : (
         <>
-          <a className="text-2xl" target="_blank" href={problem?.link}>
+          <a
+            className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 text-2xl"
+            target="_blank"
+            href={problem?.link}
+          >
             {problem?.name}
           </a>
 
