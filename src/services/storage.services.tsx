@@ -1,5 +1,4 @@
-import { StoredData } from "../types";
-
+import { Boxes, Problem, StoredData } from "../types";
 export class LocalStorage {
   static getItem(key: string) {
     return localStorage.getItem(key);
@@ -16,14 +15,24 @@ export class LocalStorage {
   static clear() {
     localStorage.clear();
   }
-}
 
-export function updateProblemBox(problemName: string, boxNumber: string) {
-  const rawDataJson = LocalStorage.getItem("data");
-  if (rawDataJson) {
-    const storedData: StoredData = JSON.parse(rawDataJson);
-    const indexOfProblem = storedData.problems.findIndex((obj) => obj.name === problemName);
-    storedData.problems[indexOfProblem].box = boxNumber;
-    LocalStorage.setItem("data", JSON.stringify(storedData));
+  static addProblemToBox(problem: Problem, boxNumber: string) {
+    const rawDataJson = LocalStorage.getItem("data");
+    if (rawDataJson) {
+      const storedData: StoredData = JSON.parse(rawDataJson);
+      storedData.boxes[boxNumber as keyof Boxes].push(problem);
+      LocalStorage.setItem("data", JSON.stringify(storedData));
+    }
+  }
+
+  static removeProblemFromBox(problem: Problem, boxNumber: string) {
+    const rawDataJson = LocalStorage.getItem("data");
+    if (rawDataJson) {
+      const storedData: StoredData = JSON.parse(rawDataJson);
+      storedData.boxes[boxNumber as keyof Boxes] = storedData.boxes[boxNumber as keyof Boxes].filter(
+        (item) => item.name != problem.name
+      );
+      LocalStorage.setItem("data", JSON.stringify(storedData));
+    }
   }
 }

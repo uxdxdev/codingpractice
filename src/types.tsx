@@ -8,22 +8,24 @@ export interface SheetData extends Array<SheetDataItem> {}
 export interface Problem {
   name: string;
   link: string;
-  box: string;
 }
 
-export interface Problems extends Array<Problem> {}
+export interface Boxes {
+  "1": Problem[];
+  "2": Problem[];
+  "3": Problem[];
+  "4": Problem[];
+  "5": Problem[];
+}
 
 export interface StoredData {
   previousSessionDate: Date;
   currentDay: string;
-  totalProblems: number;
-  "1": Problems[];
-  "2": Problems[];
-  "3": Problems[];
-  "4": Problems[];
-  "5": Problems[];
+  boxes: Boxes;
 }
 
 export interface HomeProps {
-  data: StoredData;
+  currentBoxNumber: string;
+  currentDay: string;
+  currentProblemSet: Problem[];
 }
