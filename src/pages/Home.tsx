@@ -1,76 +1,70 @@
-import { useState } from "react";
-import { getRandomElement } from "../lib/utils";
-import { HomeProps, Problem } from "../types";
+import { useState, useMemo, useEffect } from "react";
+import { getBoxes } from "../lib/utils";
+import { Boxes, HomeProps, Problem } from "../types";
 import { LocalStorage } from "../services/storage.services";
+import IntervalIndicator from "../components/IntervalIndicator";
+import { boxMapping, intervals } from "../constants";
 
-const DIFFICULTY_LEVELS = {
-  EASY: "EASY",
-  HARD: "HARD",
-};
+function Home({ boxes, day }: HomeProps) {
+  const [currentProblemSet, setCurrentProblemSet] = useState<Problem[]>([]);
+  const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
+  const [currentBoxNumbers, setCurrentBoxNumbers] = useState<string[]>([]);
+  const [currentBoxNumber, setCurrentBoxNumber] = useState<number | null>(null);
 
-function handleDifficultySelection(selection: string, currentProblem: Problem, currentBoxNumber: string) {
-  let nextBoxNumber = currentBoxNumber;
-  if (selection === DIFFICULTY_LEVELS.EASY) {
-    const tempNextBoxNumber = Number(nextBoxNumber) + 1;
-    nextBoxNumber = "" + (tempNextBoxNumber <= 5 ? tempNextBoxNumber : 5);
-  } else if (selection === DIFFICULTY_LEVELS.HARD) {
-    LocalStorage.addProblemToBox(currentProblem, "1");
-  }
-  LocalStorage.removeProblemFromBox(currentProblem, currentBoxNumber);
-  LocalStorage.addProblemToBox(currentProblem, nextBoxNumber);
-}
+  useEffect(() => {
+    const currentBoxes = getBoxes({ intervals, value: day, mapping: boxMapping });
+    setCurrentBoxNumbers(currentBoxes);
+    if (currentBoxes.length > 0) {
+      const boxNumber = currentBoxes.pop()!;
+      setCurrentBoxNumber(Number(boxNumber));
+      setCurrentProblemSet(boxes[boxNumber as keyof Boxes]);
+    }
+  }, [boxes, day]);
 
-function Home({ currentBoxNumber, currentDay, currentProblemSet }: HomeProps) {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const problem = currentProblemSet[currentProblemIndex];
+  useEffect(() => {
+    if (currentProblemSet.length > 0) {
+      const problem: Problem = currentProblemSet[0];
+      setCurrentProblem(problem);
+    } else {
+      if (currentBoxNumbers.length > 0) {
+        const boxNumber = currentBoxNumbers.pop()!;
+        setCurrentBoxNumber(Number(boxNumber));
+      }
+    }
+  }, [currentProblemSet, currentBoxNumbers]);
+
+  const IntervalIndicatorMemo = useMemo(
+    () => <IntervalIndicator value={day} intervals={intervals} indicatorColor="background-green" />,
+    [day]
+  );
+
+  console.log(currentProblemSet);
 
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">
-      <div className="flex flex-row gap-2">
-        <div
-          className={`w-6 flex justify-center rounded-lg ${currentDay === "1" ? "background-red" : "background-none"}`}
-        >
-          1
-        </div>
-        <div
-          className={`w-6 flex justify-center rounded-lg ${currentDay === "3" ? "background-red" : "background-none"}`}
-        >
-          3
-        </div>
-        <div
-          className={`w-6 flex justify-center rounded-lg ${currentDay === "7" ? "background-red" : "background-none"}`}
-        >
-          7
-        </div>
-        <div
-          className={`w-6 flex justify-center rounded-lg ${currentDay === "14" ? "background-red" : "background-none"}`}
-        >
-          14
-        </div>
-        <div
-          className={`w-6 flex justify-center rounded-lg ${currentDay === "28" ? "background-red" : "background-none"}`}
-        >
-          28
-        </div>
-      </div>
+      {IntervalIndicatorMemo}
       <div>Prolems remaining {currentProblemSet?.length}</div>
-      {!problem ? (
+      {!currentProblem ? (
         <div>All problems solved!</div>
       ) : (
         <>
           <a
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 text-2xl"
             target="_blank"
-            href={problem?.link}
+            href={currentProblem?.link}
           >
-            {problem?.name}
+            {currentProblem?.name}
           </a>
 
           <div className="space-x-3">
             <button
               onClick={() => {
-                handleDifficultySelection(DIFFICULTY_LEVELS.EASY, problem, currentBoxNumber);
-                setCurrentProblemIndex(getRandomElement(currentProblemSet));
+                if (currentBoxNumber) {
+                  const nextBoxNumber = currentBoxNumber < 5 ? currentBoxNumber + 1 : 5;
+                  LocalStorage.addProblemToBox(currentProblem, String(nextBoxNumber));
+                  LocalStorage.removeProblemFromBox(currentProblem, String(currentBoxNumber));
+                  setCurrentProblemSet((state) => state.filter((problem) => problem.name != currentProblem.name));
+                }
               }}
               className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
             >
@@ -78,8 +72,11 @@ function Home({ currentBoxNumber, currentDay, currentProblemSet }: HomeProps) {
             </button>
             <button
               onClick={() => {
-                handleDifficultySelection(DIFFICULTY_LEVELS.HARD, problem, currentBoxNumber);
-                setCurrentProblemIndex(getRandomElement(currentProblemSet));
+                if (currentBoxNumber) {
+                  LocalStorage.addProblemToBox(currentProblem, "1");
+                  LocalStorage.removeProblemFromBox(currentProblem, String(currentBoxNumber));
+                  setCurrentProblemSet((state) => state.filter((problem) => problem.name != currentProblem.name));
+                }
               }}
               className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
             >

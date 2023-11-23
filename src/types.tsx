@@ -20,12 +20,11 @@ export interface Boxes {
 
 export interface StoredData {
   previousSessionDate: Date;
-  currentDay: string;
+  currentDay: number;
   boxes: Boxes;
 }
 
 export interface HomeProps {
-  currentBoxNumber: string;
-  currentDay: string;
-  currentProblemSet: Problem[];
+  boxes: Boxes;
+  day: number;
 }
