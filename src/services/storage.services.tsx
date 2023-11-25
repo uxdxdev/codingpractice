@@ -16,11 +16,23 @@ export class LocalStorage {
     localStorage.clear();
   }
 
+  static getData(): StoredData | null {
+    const rawStoredData = LocalStorage.getItem("data");
+    if (rawStoredData) {
+      return JSON.parse(rawStoredData);
+    }
+    return null;
+  }
+
+  static setData(data: StoredData) {
+    LocalStorage.setItem("data", JSON.stringify(data));
+  }
+
   static addProblemToBox(problem: Problem, boxNumber: string) {
     const rawDataJson = LocalStorage.getItem("data");
     if (rawDataJson) {
       const storedData: StoredData = JSON.parse(rawDataJson);
-      storedData.boxes[boxNumber as keyof Boxes].push(problem);
+      storedData.boxes[boxNumber as keyof Boxes].push({ name: problem.name, link: problem.link });
       LocalStorage.setItem("data", JSON.stringify(storedData));
     }
   }

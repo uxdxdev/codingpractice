@@ -12,19 +12,15 @@ export interface Problem {
 
 export interface Boxes {
   "1": Problem[];
-  "2": Problem[];
   "3": Problem[];
-  "4": Problem[];
-  "5": Problem[];
+  "7": Problem[];
+  "14": Problem[];
+  "28": Problem[];
 }
 
 export interface StoredData {
-  previousSessionDate: Date;
+  prevSessionDate: Date;
   currentDay: number;
   boxes: Boxes;
-}
-
-export interface HomeProps {
-  boxes: Boxes;
-  day: number;
+  done: boolean;
 }
