@@ -28,19 +28,11 @@ export function getRandomElement<T>(data: T[]): number {
 
 export const isIntervalActive = (interval: number, value: number) => value % interval === 0;
 
-export function getBoxes({
-  intervals,
-  value,
-  mapping,
-}: {
-  intervals: number[];
-  value: number;
-  mapping: { [key: number]: string };
-}) {
-  const boxes: string[] = [];
+export function getBoxes({ intervals, value }: { intervals: number[]; value: number }) {
+  const boxes: number[] = [];
   intervals.forEach((interval) => {
     if (isIntervalActive(interval, value)) {
-      boxes.push(mapping[interval]);
+      boxes.push(interval);
     }
   });
   return boxes;

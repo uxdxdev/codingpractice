@@ -12,6 +12,10 @@ body,
   background: palegreen;
 }
 
+.background-purple {
+  background: mediumpurple;
+}
+
 .background-none {
   background: none;
 }
