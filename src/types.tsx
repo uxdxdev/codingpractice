@@ -8,6 +8,7 @@ export interface SheetData extends Array<SheetDataItem> {}
 export interface Problem {
   name: string;
   link: string;
+  active: boolean;
 }
 
 export interface Boxes {

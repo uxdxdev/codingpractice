@@ -3,7 +3,7 @@ import Home from "./Home";
 import { LocalStorage } from "../services/storage.services";
 import { fetchData } from "../lib/utils";
 import { SHEET_DATABASE_API_URL } from "../constants";
-import { SheetData, StoredData } from "../types";
+import { Boxes, SheetData, StoredData, Problem } from "../types";
 
 const defaultStoredData: StoredData = {
   prevSessionDate: new Date(),
@@ -50,7 +50,9 @@ function App() {
         // if no local storage data use default data and
         // add problems from google sheet
         storedLSData = defaultStoredData;
-        sheetData.forEach((item) => storedLSData?.boxes["1"].push({ name: item.problem, link: item.link }));
+        sheetData.forEach((item) =>
+          storedLSData?.boxes["1"].push({ name: item.problem, link: item.link, active: true })
+        );
       } else {
         const today = new Date();
         const prevSession = new Date(storedLSData.prevSessionDate);
@@ -63,6 +65,11 @@ function App() {
           storedLSData.currentDay = dayNum;
           storedLSData.prevSessionDate = today;
           storedLSData.done = false;
+          Object.entries(storedLSData.boxes).forEach(([key, value]) => {
+            if (storedLSData) {
+              storedLSData.boxes[key as keyof Boxes] = value.map((item: Problem) => ({ ...item, active: true }));
+            }
+          });
         }
       }
 

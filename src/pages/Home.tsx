@@ -8,6 +8,7 @@ interface InMemoryProblem {
   name: string;
   link: string;
   box: number;
+  active: boolean;
 }
 
 function Home({ day }: { day: number }) {
@@ -33,7 +34,7 @@ function Home({ day }: { day: number }) {
       // put all todays problems in set
       const ps: InMemoryProblem[] = [];
       currentBoxes.forEach((box) => {
-        ps.push(...boxes[String(box) as keyof Boxes].map((p) => ({ ...p, box })));
+        ps.push(...boxes[String(box) as keyof Boxes].filter((item) => item.active).map((p) => ({ ...p, box })));
       });
       setCurrentProblemSet(ps);
     }
@@ -88,6 +89,7 @@ function Home({ day }: { day: number }) {
 
           <div className="space-x-3">
             <button
+              title="Move to next box"
               onClick={() => {
                 if (currentProblem) {
                   const currentBoxIndex = intervals.indexOf(currentProblem.box);
@@ -96,6 +98,7 @@ function Home({ day }: { day: number }) {
                       ? intervals[currentBoxIndex + 1]
                       : intervals[intervals.length - 1];
                   LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
+                  currentProblem.active = false;
                   LocalStorage.addProblemToBox(currentProblem, String(nextBox));
                   setCurrentProblemSet(
                     (state) => state && state.filter((problem) => problem.name != currentProblem.name)
@@ -104,12 +107,14 @@ function Home({ day }: { day: number }) {
               }}
               className="h-10 px-3 py-1 font-semibold rounded-md bg-green-400 text-white"
             >
-              Easy
+              Move to next box
             </button>
             <button
+              title="Try again tomorrow"
               onClick={() => {
                 if (currentProblem) {
                   LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
+                  currentProblem.active = false;
                   LocalStorage.addProblemToBox(currentProblem, "1");
                   setCurrentProblemSet(
                     (state) => state && state.filter((problem) => problem.name != currentProblem.name)
@@ -118,7 +123,7 @@ function Home({ day }: { day: number }) {
               }}
               className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
             >
-              Hard
+              Try again tomorrow
             </button>
           </div>
         </>
