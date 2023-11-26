@@ -5,9 +5,6 @@ import { fetchData } from "../lib/utils";
 import { SHEET_DATABASE_API_URL } from "../constants";
 import { SheetData, StoredData } from "../types";
 
-const daysAgo = new Date();
-daysAgo.setDate(daysAgo.getDate() - 3);
-
 const defaultStoredData: StoredData = {
   prevSessionDate: new Date(),
   currentDay: 1,
@@ -87,17 +84,13 @@ function App() {
         onClick={() => {
           const storedLSData = LocalStorage.getData();
           if (storedLSData) {
-            const nextDay = new Date(storedLSData.prevSessionDate);
-            nextDay.setDate(nextDay.getDate() + 1);
-            const dayNum = storedLSData.currentDay + 1 <= 28 ? storedLSData.currentDay + 1 : 1;
+            const dayBefore = new Date(storedLSData.prevSessionDate);
+            dayBefore.setDate(dayBefore.getDate() + -1);
 
             // local storage
-            storedLSData.prevSessionDate = nextDay;
-            storedLSData.currentDay = dayNum;
-            storedLSData.done = false;
+            storedLSData.prevSessionDate = dayBefore;
             LocalStorage.setData(storedLSData);
-
-            setDay(dayNum);
+            window.location.reload();
           }
         }}
       >
