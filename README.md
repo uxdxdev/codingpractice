@@ -1,6 +1,6 @@
 ![](./src/assets/banner.png)
 
-https://codingpractice.surge.sh/
+<a href="https://codingpractice.surge.sh/" target="_blank">codingpractice.surge.sh</a>
 
 ## What is this?
 
