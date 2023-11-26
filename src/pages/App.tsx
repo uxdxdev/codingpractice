@@ -78,8 +78,7 @@ function App() {
 
   return (
     <>
-      {/* todo: remove this button  */}
-      <button
+      {/* <button
         className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
         onClick={() => {
           const storedLSData = LocalStorage.getData();
@@ -95,7 +94,7 @@ function App() {
         }}
       >
         Increment day
-      </button>
+      </button> */}
       <Home day={day} />
     </>
   );
