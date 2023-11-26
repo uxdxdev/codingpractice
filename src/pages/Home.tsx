@@ -70,8 +70,8 @@ function Home({ day }: { day: number }) {
   if (isLoading) return;
 
   return (
-    <div className="h-full flex flex-col items-center justify-center space-y-4">
-      <div>Day {day} of practice</div>
+    <div className="h-full flex flex-col items-center justify-center space-y-4 mb-auto">
+      <div className="text-2xl">Day {day} of practice</div>
       {IntervalIndicatorMemo}
       {done ? (
         <div>All problems solved for today!</div>
@@ -123,6 +123,15 @@ function Home({ day }: { day: number }) {
           </div>
         </>
       )}
+      <div className="text-xs">
+        Found an issue? report it on{" "}
+        <a
+          className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+          href="https://github.com/uxdxdev/codingpractice/issues"
+        >
+          GitHub
+        </a>
+      </div>
     </div>
   );
 }
