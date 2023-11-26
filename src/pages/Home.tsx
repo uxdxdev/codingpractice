@@ -13,9 +13,11 @@ interface InMemoryProblem {
 function Home({ day }: { day: number }) {
   const [currentProblemSet, setCurrentProblemSet] = useState<InMemoryProblem[] | null>(null);
   const [currentProblem, setCurrentProblem] = useState<InMemoryProblem | null>(null);
-  const [done, setDone] = useState(true);
   const [boxes, setBoxes] = useState<Boxes | null>(null);
+  const [done, setDone] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // init
   useEffect(() => {
     const storedData = LocalStorage.getData();
     if (storedData) {
@@ -24,54 +26,58 @@ function Home({ day }: { day: number }) {
     }
   }, []);
 
-  // on mount
   useEffect(() => {
     // get boxes based on day
     const currentBoxes = getBoxes({ intervals, value: day });
-    if (!done && currentBoxes?.length > 0 && boxes) {
-      // put all problems in todays problem set
-      setCurrentProblemSet([]); // todo remove
+    if (currentBoxes?.length > 0 && boxes) {
+      // put all todays problems in set
+      const ps: InMemoryProblem[] = [];
       currentBoxes.forEach((box) => {
-        setCurrentProblemSet(
-          (state) => state && [...state, ...boxes[String(box) as keyof Boxes].map((p) => ({ ...p, box }))]
-        );
+        ps.push(...boxes[String(box) as keyof Boxes].map((p) => ({ ...p, box })));
       });
+      setCurrentProblemSet(ps);
     }
-  }, [done, boxes, day]);
+  }, [boxes, day]);
 
-  useEffect(() => {
-    if (currentProblemSet && currentProblemSet.length > 0) {
-      const problem: InMemoryProblem = currentProblemSet[0];
-      setCurrentProblem(problem);
-    }
-  }, [currentProblemSet, boxes, currentProblem]);
-
+  // figure out if the problem set is complete or get the next problem
   useEffect(() => {
     if (currentProblemSet && currentProblemSet.length === 0) {
       const storedData = LocalStorage.getData();
       if (storedData) {
         storedData.done = true;
-        setDone(true);
         LocalStorage.setData(storedData);
+        setDone(true);
       }
+    } else if (currentProblemSet) {
+      const problem: InMemoryProblem = currentProblemSet[0];
+      setCurrentProblem(problem);
     }
-  }, [currentProblemSet]);
+  }, [isLoading, currentProblemSet]);
 
-  // highlight the boxes based on the current day
+  // highlight the intervals based on the current day
   const IntervalIndicatorMemo = useMemo(
     () => <IntervalIndicator value={day} intervals={intervals} indicatorColor="background-green" />,
     [day]
   );
 
+  // prevent render flash
+  useEffect(() => {
+    if ((currentProblemSet !== null || currentProblem !== null) && boxes !== null && done !== null) {
+      setIsLoading(false);
+    }
+  }, [currentProblemSet, currentProblem, boxes, done]);
+
+  if (isLoading) return;
+
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">
       <div>Day {day} of practice</div>
       {IntervalIndicatorMemo}
-      <div>Prolems remaining {currentProblemSet?.length || 0}</div>
       {done ? (
         <div>All problems solved for today!</div>
       ) : (
         <>
+          <div>Prolems remaining {currentProblemSet?.length || 0}</div>
           <a
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 text-2xl"
             target="_blank"
