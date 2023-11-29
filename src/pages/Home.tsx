@@ -17,12 +17,18 @@ function Home({ day }: { day: number }) {
   const [boxes, setBoxes] = useState<Boxes | null>(null);
   const [done, setDone] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalNumberOfProblems, setTotalNumberOfProblems] = useState(0);
 
   // init
   useEffect(() => {
     const storedData = LocalStorage.getData();
     if (storedData) {
       setBoxes(storedData.boxes);
+      setTotalNumberOfProblems(
+        Object.values(storedData.boxes)
+          .map((arr) => arr.length)
+          .reduce((acc, cur) => acc + cur, 0)
+      );
       setDone(storedData.done);
     }
   }, []);
@@ -126,7 +132,9 @@ function Home({ day }: { day: number }) {
           Try again tomorrow
         </button>
       </div>
-      <div className="my-2">Prolems remaining {currentProblemSet?.length || 0}</div>
+      <div className="my-2">
+        Problems remaining {currentProblemSet?.length || 0}/{totalNumberOfProblems}
+      </div>
 
       <div className="text-xs">
         Found an issue? report it on{" "}
