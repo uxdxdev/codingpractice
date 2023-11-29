@@ -18,20 +18,39 @@ function Home({ day }: { day: number }) {
   const [done, setDone] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [totalNumberOfProblems, setTotalNumberOfProblems] = useState(0);
+  const [boxesWithProblems, setBoxesWithProblems] = useState<number[]>([]);
 
   // init
   useEffect(() => {
     const storedData = LocalStorage.getData();
     if (storedData) {
       setBoxes(storedData.boxes);
-      setTotalNumberOfProblems(
-        Object.values(storedData.boxes)
-          .map((arr) => arr.length)
-          .reduce((acc, cur) => acc + cur, 0)
-      );
+
       setDone(storedData.done);
     }
   }, []);
+
+  useEffect(() => {
+    const storedData = LocalStorage.getData();
+    if (storedData) {
+      const problemData = Object.entries(storedData.boxes).reduce(
+        (
+          acc: {
+            boxes: number[];
+            total: number;
+          },
+          [key, value]
+        ) => {
+          value.length > 0 && acc.boxes.push(+key);
+          acc.total = acc.total + value.length;
+          return acc;
+        },
+        { boxes: [], total: 0 }
+      );
+      setTotalNumberOfProblems(problemData.total);
+      setBoxesWithProblems(problemData.boxes);
+    }
+  }, [currentProblem]);
 
   useEffect(() => {
     // get boxes based on day
@@ -63,8 +82,17 @@ function Home({ day }: { day: number }) {
 
   // highlight the intervals based on the current day
   const IntervalIndicatorMemo = useMemo(
-    () => <IntervalIndicator value={day} intervals={intervals} indicatorColor="background-green" />,
-    [day]
+    () => (
+      <IntervalIndicator
+        title={"Day of practice box, border to indicate problems exist"}
+        value={day}
+        intervals={intervals}
+        indicatorColor="bg-sky-300"
+        borderHighlightColor="border-fuchsia-500"
+        highlight={boxesWithProblems}
+      />
+    ),
+    [day, boxesWithProblems]
   );
 
   // prevent render flash
