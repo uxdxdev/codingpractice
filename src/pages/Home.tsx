@@ -15,7 +15,7 @@ function Home({ day }: { day: number }) {
   const [currentProblemSet, setCurrentProblemSet] = useState<InMemoryProblem[] | null>(null);
   const [currentProblem, setCurrentProblem] = useState<InMemoryProblem | null>(null);
   const [boxes, setBoxes] = useState<Boxes | null>(null);
-  const [done, setDone] = useState<boolean | null>(null);
+  const [done, setDone] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // init
@@ -71,14 +71,14 @@ function Home({ day }: { day: number }) {
   if (isLoading) return;
 
   return (
-    <div className="h-full flex flex-col items-center justify-center space-y-4 mb-auto">
-      <div className="text-2xl">Day {day} of practice</div>
+    <div className="h-full flex flex-col items-center justify-center mb-auto">
+      <div className="text-2xl mb-4">Day {day} of practice</div>
       {IntervalIndicatorMemo}
-      {done ? (
-        <div>All problems solved for today!</div>
-      ) : (
-        <>
-          <div>Prolems remaining {currentProblemSet?.length || 0}</div>
+
+      <div className="my-16">
+        {done ? (
+          <div className="text-2xl">All problems solved for today!</div>
+        ) : (
           <a
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 text-2xl"
             target="_blank"
@@ -86,48 +86,48 @@ function Home({ day }: { day: number }) {
           >
             {currentProblem?.name}
           </a>
+        )}
+      </div>
 
-          <div className="space-x-3">
-            <button
-              title="Move to next box"
-              onClick={() => {
-                if (currentProblem) {
-                  const currentBoxIndex = intervals.indexOf(currentProblem.box);
-                  const nextBox =
-                    currentBoxIndex + 1 < intervals.length
-                      ? intervals[currentBoxIndex + 1]
-                      : intervals[intervals.length - 1];
-                  LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
-                  currentProblem.active = false;
-                  LocalStorage.addProblemToBox(currentProblem, String(nextBox));
-                  setCurrentProblemSet(
-                    (state) => state && state.filter((problem) => problem.name != currentProblem.name)
-                  );
-                }
-              }}
-              className="h-10 px-3 py-1 font-semibold rounded-md bg-green-400 text-white"
-            >
-              Move to next box
-            </button>
-            <button
-              title="Try again tomorrow"
-              onClick={() => {
-                if (currentProblem) {
-                  LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
-                  currentProblem.active = false;
-                  LocalStorage.addProblemToBox(currentProblem, "1");
-                  setCurrentProblemSet(
-                    (state) => state && state.filter((problem) => problem.name != currentProblem.name)
-                  );
-                }
-              }}
-              className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
-            >
-              Try again tomorrow
-            </button>
-          </div>
-        </>
-      )}
+      <div className="space-x-3">
+        <button
+          disabled={done}
+          title="Move to next box"
+          onClick={() => {
+            if (currentProblem) {
+              const currentBoxIndex = intervals.indexOf(currentProblem.box);
+              const nextBox =
+                currentBoxIndex + 1 < intervals.length
+                  ? intervals[currentBoxIndex + 1]
+                  : intervals[intervals.length - 1];
+              LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
+              currentProblem.active = false;
+              LocalStorage.addProblemToBox(currentProblem, String(nextBox));
+              setCurrentProblemSet((state) => state && state.filter((problem) => problem.name != currentProblem.name));
+            }
+          }}
+          className="h-10 px-3 py-1 font-semibold rounded-md bg-green-400 text-white"
+        >
+          Move to next box
+        </button>
+        <button
+          disabled={done}
+          title="Try again tomorrow"
+          onClick={() => {
+            if (currentProblem) {
+              LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
+              currentProblem.active = false;
+              LocalStorage.addProblemToBox(currentProblem, "1");
+              setCurrentProblemSet((state) => state && state.filter((problem) => problem.name != currentProblem.name));
+            }
+          }}
+          className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
+        >
+          Try again tomorrow
+        </button>
+      </div>
+      <div className="my-2">Prolems remaining {currentProblemSet?.length || 0}</div>
+
       <div className="text-xs">
         Found an issue? report it on{" "}
         <a
