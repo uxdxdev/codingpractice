@@ -21,7 +21,7 @@ function IntervalIndicator({
         <div
           title={title}
           key={index}
-          className={`w-6 flex justify-center rounded-lg ${
+          className={`w-7 flex justify-center rounded-full ${
             isIntervalActive(interval, value) ? indicatorColor : "background-none"
           } border-solid border-2 ${highlight.includes(interval) && borderHighlightColor}`}
         >
