@@ -87,7 +87,7 @@ function Home({ day }: { day: number }) {
         title={"Day of practice box, border to indicate problems exist"}
         value={day}
         intervals={intervals}
-        indicatorColor="bg-sky-300"
+        indicatorColor="bg-fuchsia-700"
         borderHighlightColor="border-fuchsia-500"
         highlight={boxesWithProblems}
       />
@@ -105,7 +105,7 @@ function Home({ day }: { day: number }) {
   if (isLoading) return;
 
   return (
-    <div className="h-full flex flex-col items-center justify-center mb-auto">
+    <div className="dark:bg-slate-800 dark:text-white h-full flex flex-col items-center justify-center mb-auto">
       <div className="text-2xl mb-4">Day {day} of practice</div>
       {IntervalIndicatorMemo}
 
@@ -123,7 +123,7 @@ function Home({ day }: { day: number }) {
         )}
       </div>
 
-      <div className="space-x-3">
+      <div className="flex gap-x-4">
         <button
           disabled={done}
           title="Move to next box"
@@ -140,7 +140,7 @@ function Home({ day }: { day: number }) {
               setCurrentProblemSet((state) => state && state.filter((problem) => problem.name != currentProblem.name));
             }
           }}
-          className="h-10 px-3 py-1 font-semibold rounded-md bg-green-400 text-white"
+          className="h-10 px-3 py-1 font-semibold rounded-md border-2 border-green-600 bg-green-400 text-white"
         >
           Move to next box
         </button>
@@ -155,13 +155,13 @@ function Home({ day }: { day: number }) {
               setCurrentProblemSet((state) => state && state.filter((problem) => problem.name != currentProblem.name));
             }
           }}
-          className="h-10 px-3 py-1 font-semibold rounded-md bg-red-400 text-white"
+          className="h-10 px-3 py-1 font-semibold rounded-md border-2 border-red-600 bg-red-400 text-white"
         >
           Try again tomorrow
         </button>
       </div>
-      <div className="my-2">
-        Problems remaining {currentProblemSet?.length || 0}/{totalNumberOfProblems}
+      <div className="my-4">
+        {currentProblemSet?.length || 0}/{totalNumberOfProblems}
       </div>
 
       <div className="text-xs">
