@@ -58,7 +58,7 @@ function Home({ day }: { day: number }) {
     if (currentBoxes?.length > 0 && boxes) {
       // put all todays problems in set
       const ps: InMemoryProblem[] = [];
-      currentBoxes.forEach((box) => {
+      currentBoxes.reverse().forEach((box) => {
         ps.push(...boxes[String(box) as keyof Boxes].filter((item) => item.active).map((p) => ({ ...p, box })));
       });
       setCurrentProblemSet(ps);

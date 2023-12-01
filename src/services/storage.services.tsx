@@ -32,7 +32,7 @@ export class LocalStorage {
     const rawDataJson = LocalStorage.getItem("data");
     if (rawDataJson) {
       const storedData: StoredData = JSON.parse(rawDataJson);
-      storedData.boxes[boxNumber as keyof Boxes].push({
+      storedData.boxes[boxNumber as keyof Boxes].unshift({
         name: problem.name,
         link: problem.link,
         active: problem.active,
