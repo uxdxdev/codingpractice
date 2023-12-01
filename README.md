@@ -1,6 +1,6 @@
 ![](./src/assets/banner.png)
 
-App https://codingpractice.surge.sh/
+[uxdx.dev/codingpractice](https://uxdx.dev/codingpractice/)
 
 ## What is this?
 
