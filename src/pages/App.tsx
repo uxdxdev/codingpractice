@@ -8,6 +8,8 @@ import { Boxes, SheetData, StoredData, Problem } from "../types";
 const defaultStoredData: StoredData = {
   prevSessionDate: new Date(),
   currentDay: 1,
+  currentStreak: 1,
+  streakHighScore: 1,
   boxes: {
     "1": [],
     "3": [],
@@ -17,6 +19,10 @@ const defaultStoredData: StoredData = {
   },
   done: false,
 };
+
+function datediff(first: Date, second: Date) {
+  return Math.round((second.valueOf() - first.valueOf()) / (1000 * 60 * 60 * 24));
+}
 
 function App() {
   const [sheetData, setSheetData] = useState<SheetData>([]);
@@ -63,6 +69,11 @@ function App() {
           // new day of practice
           const dayNum = storedLSData.currentDay + 1 <= 28 ? storedLSData.currentDay + 1 : 1;
           storedLSData.currentDay = dayNum;
+          storedLSData.currentStreak = datediff(prevSession, today) < 2 ? storedLSData.currentStreak + 1 : 1;
+          storedLSData.streakHighScore =
+            storedLSData.currentStreak > storedLSData.streakHighScore
+              ? storedLSData.currentStreak
+              : storedLSData.streakHighScore;
           storedLSData.prevSessionDate = today;
           storedLSData.done = false;
           Object.entries(storedLSData.boxes).forEach(([key, value]) => {
@@ -91,7 +102,7 @@ function App() {
           const storedLSData = LocalStorage.getData();
           if (storedLSData) {
             const dayBefore = new Date(storedLSData.prevSessionDate);
-            dayBefore.setDate(dayBefore.getDate() + -1);
+            dayBefore.setDate(dayBefore.getDate() - 1);
 
             // local storage
             storedLSData.prevSessionDate = dayBefore;
