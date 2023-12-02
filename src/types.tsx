@@ -22,6 +22,8 @@ export interface Boxes {
 export interface StoredData {
   prevSessionDate: Date;
   currentDay: number;
+  currentStreak: number;
+  streakHighScore: number;
   boxes: Boxes;
   done: boolean;
 }

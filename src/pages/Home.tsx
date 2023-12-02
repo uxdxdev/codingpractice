@@ -19,14 +19,17 @@ function Home({ day }: { day: number }) {
   const [isLoading, setIsLoading] = useState(true);
   const [totalNumberOfProblems, setTotalNumberOfProblems] = useState(0);
   const [boxesWithProblems, setBoxesWithProblems] = useState<number[]>([]);
+  const [currentStreak, setCurrentStreak] = useState(1);
+  const [streakHighScore, setStreakHighScore] = useState(1);
 
   // init
   useEffect(() => {
     const storedData = LocalStorage.getData();
     if (storedData) {
       setBoxes(storedData.boxes);
-
       setDone(storedData.done);
+      setCurrentStreak(storedData.currentStreak);
+      setStreakHighScore(storedData.streakHighScore);
     }
   }, []);
 
@@ -105,13 +108,24 @@ function Home({ day }: { day: number }) {
   if (isLoading) return;
 
   return (
-    <div className="dark:bg-slate-800 dark:text-white h-full flex flex-col items-center justify-center mb-auto">
-      <div className="text-2xl mb-4">Day {day} of practice</div>
+    <div className="bg-slate-800 text-white h-full flex flex-col items-center justify-center mb-auto">
+      <div className="text-2xl mb-1">Day {day} of practice</div>
+      <div className="text- mb-6">
+        <span className="animate-pulse text-2xl">🔥</span> {currentStreak} day streak{" "}
+        <span className="animate-pulse text-2xl">🔥</span>
+      </div>
       {IntervalIndicatorMemo}
 
       <div className="my-16">
         {done ? (
-          <div className="text-2xl">All problems solved for today!</div>
+          <div className="flex items-center">
+            <div className="animate-pulse text-6xl">🔥</div>
+            <div className="flex flex-col">
+              <div className="text-2xl text-center">All done for today</div>
+              <div className="text-center">Come back tomorrow to continue your streak!</div>
+            </div>
+            <div className="animate-pulse text-6xl">🔥</div>
+          </div>
         ) : (
           <a
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 text-2xl"
@@ -164,7 +178,7 @@ function Home({ day }: { day: number }) {
         {currentProblemSet?.length || 0}/{totalNumberOfProblems}
       </div>
 
-      <div className="text-xs">
+      <div className="text-xs mb-4">
         Found an issue? report it on{" "}
         <a
           className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
@@ -174,6 +188,7 @@ function Home({ day }: { day: number }) {
           GitHub
         </a>
       </div>
+      <div className="text-s">🏆 Highscore {streakHighScore} day streak 🏆</div>
     </div>
   );
 }
