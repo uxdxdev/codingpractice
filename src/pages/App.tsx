@@ -69,7 +69,9 @@ function App() {
           // new day of practice
           const dayNum = storedLSData.currentDay + 1 <= 28 ? storedLSData.currentDay + 1 : 1;
           storedLSData.currentDay = dayNum;
+          storedLSData.currentStreak = 1; // initialise currentStreak if this does not already exist in local storage
           storedLSData.currentStreak = datediff(prevSession, today) < 2 ? storedLSData.currentStreak + 1 : 1;
+          storedLSData.streakHighScore = 1; // initialise streakHighScore if this does not already exist in local storage
           storedLSData.streakHighScore =
             storedLSData.currentStreak > storedLSData.streakHighScore
               ? storedLSData.currentStreak

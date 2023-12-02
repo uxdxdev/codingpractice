@@ -110,10 +110,12 @@ function Home({ day }: { day: number }) {
   return (
     <div className="bg-slate-800 text-white h-full flex flex-col items-center justify-center mb-auto">
       <div className="text-2xl mb-1">Day {day} of practice</div>
-      <div className="text- mb-6">
-        <span className="animate-pulse text-2xl">🔥</span> {currentStreak} day streak{" "}
-        <span className="animate-pulse text-2xl">🔥</span>
-      </div>
+      {currentStreak && (
+        <div className="text- mb-6">
+          <span className="animate-pulse text-2xl">🔥</span> {currentStreak} day streak{" "}
+          <span className="animate-pulse text-2xl">🔥</span>
+        </div>
+      )}
       {IntervalIndicatorMemo}
 
       <div className="my-16">
@@ -188,7 +190,7 @@ function Home({ day }: { day: number }) {
           GitHub
         </a>
       </div>
-      <div className="text-s">🏆 Highscore {streakHighScore} day streak 🏆</div>
+      {streakHighScore && <div className="text-s">🏆 Highscore {streakHighScore} day streak 🏆</div>}
     </div>
   );
 }
