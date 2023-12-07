@@ -69,9 +69,15 @@ function App() {
           // new day of practice
           const dayNum = storedLSData.currentDay + 1 <= 28 ? storedLSData.currentDay + 1 : 1;
           storedLSData.currentDay = dayNum;
-          storedLSData.currentStreak = 1; // initialise currentStreak if this does not already exist in local storage
+
+          if (!storedLSData.currentStreak) {
+            storedLSData.currentStreak = 1;
+          }
           storedLSData.currentStreak = datediff(prevSession, today) < 2 ? storedLSData.currentStreak + 1 : 1;
-          storedLSData.streakHighScore = 1; // initialise streakHighScore if this does not already exist in local storage
+
+          if (!storedLSData.streakHighScore) {
+            storedLSData.streakHighScore = 1;
+          }
           storedLSData.streakHighScore =
             storedLSData.currentStreak > storedLSData.streakHighScore
               ? storedLSData.currentStreak
@@ -98,23 +104,25 @@ function App() {
 
   return (
     <>
-      {/* <button
-        className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
-        onClick={() => {
-          const storedLSData = LocalStorage.getData();
-          if (storedLSData) {
-            const dayBefore = new Date(storedLSData.prevSessionDate);
-            dayBefore.setDate(dayBefore.getDate() - 1);
+      {import.meta.env.DEV && (
+        <button
+          className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
+          onClick={() => {
+            const storedLSData = LocalStorage.getData();
+            if (storedLSData) {
+              const dayBefore = new Date(storedLSData.prevSessionDate);
+              dayBefore.setDate(dayBefore.getDate() - 1);
 
-            // local storage
-            storedLSData.prevSessionDate = dayBefore;
-            LocalStorage.setData(storedLSData);
-            window.location.reload();
-          }
-        }}
-      >
-        Increment day
-      </button> */}
+              // local storage
+              storedLSData.prevSessionDate = dayBefore;
+              LocalStorage.setData(storedLSData);
+              window.location.reload();
+            }
+          }}
+        >
+          Increment day
+        </button>
+      )}
       <Home day={day} />
     </>
   );
