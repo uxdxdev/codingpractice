@@ -108,7 +108,7 @@ function Home({ day }: { day: number }) {
   if (isLoading) return;
 
   return (
-    <div className="bg-slate-800 text-white h-full flex flex-col items-center justify-center mb-auto">
+    <div className="text-white h-full flex flex-col items-center justify-center mb-auto">
       <div className="text-2xl mb-1">Day {day} of practice</div>
       {currentStreak && (
         <div className="text- mb-6">
