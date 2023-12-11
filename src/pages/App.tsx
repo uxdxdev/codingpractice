@@ -105,24 +105,47 @@ function App() {
   return (
     <>
       {import.meta.env.DEV && (
-        <button
-          className="h-10 px-3 py-1 font-semibold rounded-md bg-black text-white"
-          onClick={() => {
-            const storedLSData = LocalStorage.getData();
-            if (storedLSData) {
-              const dayBefore = new Date(storedLSData.prevSessionDate);
-              dayBefore.setDate(dayBefore.getDate() - 1);
+        <>
+          <button
+            className="m-2 h-10 px-3 py-1 font-semibold rounded-md bg-white"
+            onClick={() => {
+              const storedLSData = LocalStorage.getData();
+              if (storedLSData) {
+                const dayBefore = new Date(storedLSData.prevSessionDate);
+                dayBefore.setDate(dayBefore.getDate() - 1);
 
-              // local storage
-              storedLSData.prevSessionDate = dayBefore;
-              LocalStorage.setData(storedLSData);
-              window.location.reload();
-            }
-          }}
-        >
-          Increment day
-        </button>
+                // local storage
+                storedLSData.prevSessionDate = dayBefore;
+                LocalStorage.setData(storedLSData);
+                window.location.reload();
+              }
+            }}
+          >
+            Increment day +1
+          </button>
+          <button
+            className="m-2 h-10 px-3 py-1 font-semibold rounded-md bg-white"
+            onClick={() => {
+              const storedLSData = LocalStorage.getData();
+              if (storedLSData) {
+                const dayBefore = new Date(storedLSData.prevSessionDate);
+                dayBefore.setDate(dayBefore.getDate() - 2);
+
+                // local storage
+                storedLSData.prevSessionDate = dayBefore;
+                LocalStorage.setData(storedLSData);
+                window.location.reload();
+              }
+            }}
+          >
+            Increment day +2
+          </button>
+        </>
       )}
+
+      <div id="stars"></div>
+      <div id="stars2"></div>
+      <div id="stars3"></div>
       <Home day={day} />
     </>
   );

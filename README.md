@@ -23,10 +23,6 @@ The day of practice will reset after 28 days, but the challenges will remain in 
 - [TypeScript](https://www.typescriptlang.org/), [ReactJS](https://react.dev/), and [TailwindCSS](https://tailwindcss.com/docs/guides/vite) frontend
 - [Google Sheets](https://developers.google.com/sheets/api/guides/concepts) backend
 
-## How to set up Google Sheets as a backend
+## Credits
 
-- Open [Google Cloud Console](https://console.cloud.google.com/)
-- Create a new Project called `Coding Practice`
-- APIs & Services > Credentials > Create Credentials > API key
-
-![](./src/assets/google-cloud-credentials-example.png)
+Parallax stars background - https://codepen.io/mattmarble/
