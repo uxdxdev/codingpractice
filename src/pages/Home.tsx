@@ -87,7 +87,6 @@ function Home({ day }: { day: number }) {
   const IntervalIndicatorMemo = useMemo(
     () => (
       <IntervalIndicator
-        title={"Day of practice box, border to indicate problems exist"}
         value={day}
         intervals={intervals}
         indicatorColor="bg-fuchsia-700"
@@ -107,13 +106,32 @@ function Home({ day }: { day: number }) {
 
   if (isLoading) return;
 
+  // set the size of the flame based on the current streak value
+  let currentStreakFlameSize = null;
+  switch (true) {
+    case currentStreak >= 28:
+      currentStreakFlameSize = "text-3xl";
+      break;
+    case currentStreak >= 14:
+      currentStreakFlameSize = "text-2xl";
+      break;
+    case currentStreak >= 7:
+      currentStreakFlameSize = "text-xl";
+      break;
+    case currentStreak >= 3:
+      currentStreakFlameSize = "text-lg";
+      break;
+    default:
+      currentStreakFlameSize = "text-base";
+  }
+
   return (
     <div className="text-white h-full flex flex-col items-center justify-center mb-auto">
       <div className="text-2xl mb-1">Day {day} of practice</div>
       {currentStreak && (
         <div className="text- mb-6">
-          <span className="animate-pulse text-2xl">🔥</span> {currentStreak} day streak{" "}
-          <span className="animate-pulse text-2xl">🔥</span>
+          <span className={`animate-pulse ${currentStreakFlameSize}`}>🔥</span> {currentStreak} day streak{" "}
+          <span className={`animate-pulse ${currentStreakFlameSize}`}>🔥</span>
         </div>
       )}
       {IntervalIndicatorMemo}
@@ -121,12 +139,10 @@ function Home({ day }: { day: number }) {
       <div className="my-16">
         {done ? (
           <div className="flex items-center">
-            <div className="animate-pulse text-6xl">🔥</div>
             <div className="flex flex-col">
-              <div className="text-2xl text-center">All done for today</div>
+              <div className="text-2xl text-center">All done for today 🚀</div>
               <div className="text-center">Come back tomorrow to continue your streak!</div>
             </div>
-            <div className="animate-pulse text-6xl">🔥</div>
           </div>
         ) : (
           <a

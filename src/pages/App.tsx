@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Home from "./Home";
 import { LocalStorage } from "../services/storage.services";
 import { fetchData } from "../lib/utils";
-import { SHEET_DATABASE_API_URL } from "../constants";
+import { SHEET_DATABASE_API_URL, staticProblemSet } from "../constants";
 import { Boxes, SheetData, StoredData, Problem } from "../types";
 
 const defaultStoredData: StoredData = {
@@ -24,6 +24,19 @@ function datediff(first: Date, second: Date) {
   return Math.round((second.valueOf() - first.valueOf()) / (1000 * 60 * 60 * 24));
 }
 
+function handleDataFormatting(data: Record<string, string>[]): SheetData {
+  // reduce number of problems in DEV mode
+  if (import.meta.env.DEV) {
+    data = data.splice(0, 5);
+  }
+  return data.map((item) => {
+    return {
+      problem: item.Problem,
+      link: item.Link,
+    };
+  });
+}
+
 function App() {
   const [sheetData, setSheetData] = useState<SheetData>([]);
   const [isFetchingSheetData, setIsFetchingSheetData] = useState(true);
@@ -35,16 +48,17 @@ function App() {
     // get google sheets data
     fetchData(SHEET_DATABASE_API_URL)
       .then((response) => {
-        const formattedData: SheetData = response.map((item) => {
-          return {
-            problem: item.Problem,
-            link: item.Link,
-          };
-        });
-        // update state
+        const formattedData: SheetData = handleDataFormatting(response);
         setSheetData(formattedData);
       })
-      .then(() => setIsFetchingSheetData(false));
+      .catch(() => {
+        // failed to fetch sheet data, use static problem set
+        const formattedData: SheetData = handleDataFormatting(staticProblemSet);
+        setSheetData(formattedData);
+      })
+      .finally(() => {
+        setIsFetchingSheetData(false);
+      });
   }, []);
 
   // when sheet data is updated
@@ -63,8 +77,11 @@ function App() {
         const today = new Date();
         const prevSession = new Date(storedLSData.prevSessionDate);
         if (
-          prevSession.getMonth() < today.getMonth() ||
-          (prevSession.getMonth() === today.getMonth() && prevSession.getDate() < today.getDate())
+          prevSession.getFullYear() < today.getFullYear() ||
+          (prevSession.getFullYear() === today.getFullYear() && prevSession.getMonth() < today.getMonth()) ||
+          (prevSession.getFullYear() === today.getFullYear() &&
+            prevSession.getMonth() === today.getMonth() &&
+            prevSession.getDate() < today.getDate())
         ) {
           // new day of practice
           const dayNum = storedLSData.currentDay + 1 <= 28 ? storedLSData.currentDay + 1 : 1;
