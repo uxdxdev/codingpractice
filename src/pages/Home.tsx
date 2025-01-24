@@ -158,7 +158,7 @@ function Home({ day }: { day: number }) {
       <div className="flex gap-x-4">
         <button
           disabled={done}
-          title="Move to next box"
+          title="Solved, no help needed"
           onClick={() => {
             if (currentProblem) {
               const currentBoxIndex = intervals.indexOf(currentProblem.box);
@@ -174,11 +174,11 @@ function Home({ day }: { day: number }) {
           }}
           className="h-10 px-3 py-1 font-semibold rounded-md border-2 border-green-600 bg-green-400 text-white"
         >
-          Move to next box
+          Solved, no help needed
         </button>
         <button
           disabled={done}
-          title="Try again tomorrow"
+          title="Solved, but I needed help"
           onClick={() => {
             if (currentProblem) {
               LocalStorage.removeProblemFromBox(currentProblem, String(currentProblem.box));
@@ -189,7 +189,7 @@ function Home({ day }: { day: number }) {
           }}
           className="h-10 px-3 py-1 font-semibold rounded-md border-2 border-red-600 bg-red-400 text-white"
         >
-          Try again tomorrow
+          Solved, but I needed help
         </button>
       </div>
       <div className="my-4">
