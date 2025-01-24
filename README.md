@@ -6,7 +6,8 @@
 
 ![](./src/assets/coding-practice.PNG)
 
-There are 157 easy, medium, and hard questions in total.
+~~There are 157 easy, medium, and hard questions in total.~~
+I've reduced the number of problems down to 10 because 157 is too many, I'll start to increase the number if it's too easy or boring with only a small number of problems to practice on.
 
 The list of coding challenges is based on the [Grind 75](https://www.techinterviewhandbook.org/grind75?weeks=26&hours=40&order=all_rounded&grouping=none) list excluding premium questions. 
 
